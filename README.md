@@ -32,7 +32,9 @@ python check.py --http zovXX zovXXX
 
 ## Проверка как в клиенте
 
-1. На [my.telegram.org](https://my.telegram.org) создать приложение и взять `api_id` и `api_hash`.
+Ключи и файл `.env` расписаны в [гайде](docs/api-credentials.md). Коротко:
+
+1. На [my.telegram.org](https://my.telegram.org) создать приложение и взять `api_id` и `api_hash`. Подробности в [гайде](docs/api-credentials.md).
 2. Скопировать `.env.example` в `.env` и вписать их.
 3. Войти один раз: `python check.py --login`. Код придёт в Telegram. Файл `tg.session` не коммитить.
 4. Прогнать маску тем же методом, что поле в настройках:
