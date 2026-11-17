@@ -1,36 +1,36 @@
 <p align="center">
-  <strong>English</strong> · <a href="README.ru.md">Русский</a>
+  <strong>Русский</strong> · <a href="README.en.md">English</a>
 </p>
 
 # Telegram username search
 
-Search Telegram usernames by mask and see what a public page can actually tell you. An uppercase `X` in the mask is a digit: `fsbXXX` expands to `fsb000`…`fsb999`.
+Поиск ника Telegram по маске и проверка, что о нём вообще можно узнать. Заглавная `X` в маске — цифра: `fsbXXX` даёт `fsb000`…`fsb999`.
 
-Author: [@fsb018](https://t.me/fsb018)
+Автор: [@fsb018](https://t.me/fsb018)
 
-![The Telegram client says the username is invalid for fsb420](docs/fsb420-invalid.png)
+![Клиент пишет «Некорректное имя пользователя» для ника fsb420](docs/fsb420-invalid.png)
 
-## What the script does
+## Что скрипт умеет
 
-Without a login it opens two public pages.
+Без входа он открывает две публичные страницы.
 
-- `https://t.me/name` shows a profile card only when the HTML contains `tgme_page_extra`.
-- `https://fragment.com/username/name` shows a listing, or it does not.
+- `https://t.me/ник` — карточка есть, только если в HTML есть `tgme_page_extra`.
+- `https://fragment.com/username/ник` — лот на продаже или его нет.
 
-An empty page does not mean the name is free. `fso222`, `fso888`, and `zov000` look like a random unused name, and the app still says the username is already taken. `--http` therefore records `unknown`, not `free`.
+Пустая страница не значит, что ник свободен. У `fso222`, `fso888` и `zov000` вёрстка такая же, как у случайного имени, а в клиенте написано «имя пользователя уже занято». Поэтому режим `--http` ставит `unknown`, а не `free`.
 
-The settings field matches only [`account.checkUsername`](https://core.telegram.org/method/account.checkUsername). That is `--mt`, and it needs your own login. The session file stays out of the repository.
+Совпадает с полем «Имя пользователя» только метод [`account.checkUsername`](https://core.telegram.org/method/account.checkUsername). Это режим `--mt`, ему нужен свой вход. Сессия в репозиторий не входит.
 
-| In the app | API result | Script status |
+| В приложении | Ответ | Статус скрипта |
 | --- | --- | --- |
-| you can save it | `true` | `free` |
-| username is already taken | `USERNAME_OCCUPIED` | `taken` |
-| listed for sale | `USERNAME_PURCHASE_AVAILABLE` | `sale` |
-| invalid username | `USERNAME_INVALID` | `reserved` |
+| можно сохранить | `true` | `free` |
+| имя пользователя уже занято | `USERNAME_OCCUPIED` | `taken` |
+| выставлена на продажу | `USERNAME_PURCHASE_AVAILABLE` | `sale` |
+| некорректное имя пользователя | `USERNAME_INVALID` | `reserved` |
 
-`USERNAME_INVALID` also comes back for a well-formed name. `fsb420` and `fsb555` had empty pages, and the client still refused them. `fsb999` had an empty `t.me` page and was already for sale on Fragment.
+`USERNAME_INVALID` приходит и на формально правильный ник. Так было с `fsb420` и `fsb555`: страницы пустые, клиент имя не берёт. `fsb999` при пустой странице `t.me` уже продавался на Fragment.
 
-## Run
+## Запуск
 
 ```text
 python check.py --expand zovXX
@@ -38,20 +38,20 @@ python check.py --http zovXX zovXXX
 python check.py --mt zovXX zovXXX
 ```
 
-`zovXX` is `zov00`…`zov99`. `zovXXX` is `zov000`…`zov999`.
+`zovXX` — `zov00`…`zov99`. `zovXXX` — `zov000`…`zov999`.
 
-API keys and `.env` are described in the [guide](docs/api-credentials.md). From a Russian network, [my.telegram.org](https://my.telegram.org) often answers `Too many attempts`, and a VPN gets the same line. Login for this repository was never finished: Telegram delivered the code only inside the app, with no SMS and no email.
+Ключи и `.env` описаны в [гайде](docs/api-credentials.md). С российского адреса форма на [my.telegram.org](https://my.telegram.org) часто отвечает `Too many attempts`, и VPN эту строку не снимает. Код входа в прогоне этого репозитория до конца не дошёл: Telegram отдавал его только в приложение, без SMS и без почты.
 
-`--mt` waits `--delay` seconds between calls (0.4 by default). On `FLOOD_WAIT` it waits as long as the server says.
+Между запросами `--mt` пауза `--delay` (по умолчанию 0.4 с). На `FLOOD_WAIT` скрипт ждёт столько, сколько сказал сервер.
 
-Statuses in the tsv:
+Статусы в tsv:
 
-- `free` — `checkUsername` allowed the name
-- `taken` — already taken
-- `sale` — buyable on Fragment only
-- `reserved` — `USERNAME_INVALID` on a well-formed name
-- `unknown` — `--http` only: no profile card and no listing. The page does not show whether the name is taken
-- `invalid` — fails the character rules
-- `error` — the request failed
+- `free` — `checkUsername` разрешил занять
+- `taken` — уже занят
+- `sale` — только покупка на Fragment
+- `reserved` — `USERNAME_INVALID` при нормальной форме
+- `unknown` — режим `--http`: карточки и лота нет, занят ник или нет, страница не показывает
+- `invalid` — не проходит правило символов
+- `error` — запрос не удался
 
-Without `--mt` the script never calls a name free.
+Без `--mt` скрипт не называет ник свободным.
