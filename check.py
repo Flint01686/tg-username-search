@@ -3,10 +3,10 @@
 В маске заглавная X — цифра 0–9. Остальные символы буквальные.
 zovXX даёт zov00…zov99, zovXXX даёт zov000…zov999.
 
-Без входа в аккаунт скрипт читает только t.me и Fragment. Эти страницы
-не отличают свободный ник от того, который сервер удерживает: в клиенте
-тогда «Некорректное имя пользователя» (USERNAME_INVALID). Такой результат
-здесь называется unconfirmed, а не free.
+Без входа в аккаунт скрипт читает только t.me и Fragment. Пустая страница
+t.me одинакова у свободного ника, у занятого без карточки и у удержанного.
+Такой результат называется unknown. Свободным ник бывает только после
+account.checkUsername.
 
 С сессией вызывается account.checkUsername — тот же ответ, что у поля
 в настройках.
@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parent
 SESSION = ROOT / "tg.session"
 UA = {"User-Agent": "tg-username-masks"}
 
-STATUSES = ("free", "reserved", "sale", "taken", "unconfirmed", "invalid", "error")
+STATUSES = ("free", "reserved", "sale", "taken", "unknown", "invalid", "error")
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -111,8 +111,8 @@ def http_status(name: str) -> str:
             if frag == "sale":
                 return "sale"
             if frag == "none":
-                # Публично пусто. Свободен или удержан сервером — отсюда не видно.
-                return "unconfirmed"
+                # Та же вёрстка у свободного, занятого без карточки и удержанного.
+                return "unknown"
             return "error"
         except Exception as exc:
             last_error = f"error {type(exc).__name__}"
@@ -287,8 +287,8 @@ def main() -> None:
         if not args.http:
             print(
                 "Сессии нет: проверяю только публичные страницы. "
-                "unconfirmed значит «не занят и не на продаже», а не «можно забрать». "
-                "Для ответа как в клиенте: .env и python check.py --login, затем --mt.",
+                "unknown значит «карточки и лота нет», не «ник свободен». "
+                "Ответ как в поле настроек даёт только --mt.",
                 file=sys.stderr,
             )
         rows = http_scan(names, args.workers)
