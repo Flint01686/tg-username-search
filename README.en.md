@@ -4,7 +4,7 @@
 
 # Telegram username search
 
-Search Telegram usernames by mask and see what a public page can actually tell you. An uppercase `X` in the mask is a digit: `fsbXXX` expands to `fsb000`…`fsb999`.
+A username check, separate from generating the names. One name is checked in `probe.py`. The bundled mask, where an uppercase `X` is a digit (`fsbXXX` expands to `fsb000`…`fsb999`), lives in `masks.py`. Your own list — letters, a dictionary, any other generator — is a file. It is not part of the mask.
 
 Author: [@fsb018](https://t.me/fsb018)
 
@@ -32,6 +32,8 @@ The settings field matches only [`account.checkUsername`](https://core.telegram.
 
 ## Run
 
+Mask:
+
 ```text
 python check.py --expand zovXX
 python check.py --http zovXX zovXXX
@@ -39,6 +41,31 @@ python check.py --mt zovXX zovXXX
 ```
 
 `zovXX` is `zov00`…`zov99`. `zovXXX` is `zov000`…`zov999`.
+
+Your own list, one name per line:
+
+```text
+python check.py --http --names names.txt
+python check.py --mt --names names.txt
+```
+
+From your own code, with no mask and no command line:
+
+```python
+from probe import check_public, check_username
+
+check_public("zov77")
+await check_username(client, "zov77")
+```
+
+`client` is an already connected `TelegramClient`. `check_public` does not return `free`. With a session from this repository, a batch of your own names looks like this:
+
+```python
+from probe import UsernameSession
+
+async with UsernameSession() as checker:
+    status = await checker.check("zov77")
+```
 
 API keys and `.env` are described in the [guide](docs/api-credentials.md). From a Russian network, [my.telegram.org](https://my.telegram.org) often answers `Too many attempts`, and a VPN gets the same line. Login for this repository was never finished: Telegram delivered the code only inside the app, with no SMS and no email.
 

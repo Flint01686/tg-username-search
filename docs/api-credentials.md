@@ -32,8 +32,11 @@ TG_API_HASH=0123456789abcdef0123456789abcdef
 python check.py --login
 ```
 
-Скрипт спросит номер и код из Telegram и сохранит сессию в `tg.session`. Этот файл тоже не коммитится. После входа проверка маски тем же методом, что поле в настройках:
+Скрипт спросит номер и код из Telegram и сохранит сессию в `tg.session`. Этот файл тоже не коммитится. После входа тот же метод, что поле в настройках. Маска или свой файл:
 
 ```text
 python check.py --mt zovXX zovXXX
+python check.py --mt --names names.txt
 ```
+
+Свой уже открытый клиент Telethon вызывает `probe.check_username(client, name)` и командную строку не использует.

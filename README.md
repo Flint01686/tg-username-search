@@ -4,7 +4,7 @@
 
 # Telegram username search
 
-Поиск ника Telegram по маске и проверка, что о нём вообще можно узнать. Заглавная `X` в маске — цифра: `fsbXXX` даёт `fsb000`…`fsb999`.
+Проверка ника Telegram и отдельно от неё перебор. Проверка одного имени живёт в `probe.py`. Готовая маска, где заглавная `X` — цифра (`fsbXXX` даёт `fsb000`…`fsb999`), живёт в `masks.py`. Свой список — буквы, словарь, любой другой перебор — передаётся файлом и в маску не зашит.
 
 Автор: [@fsb018](https://t.me/fsb018)
 
@@ -32,6 +32,8 @@
 
 ## Запуск
 
+Маска:
+
 ```text
 python check.py --expand zovXX
 python check.py --http zovXX zovXXX
@@ -39,6 +41,31 @@ python check.py --mt zovXX zovXXX
 ```
 
 `zovXX` — `zov00`…`zov99`. `zovXXX` — `zov000`…`zov999`.
+
+Свой список, один ник на строку:
+
+```text
+python check.py --http --names names.txt
+python check.py --mt --names names.txt
+```
+
+Из своего кода, без маски и без командной строки:
+
+```python
+from probe import check_public, check_username
+
+check_public("zov77")
+await check_username(client, "zov77")
+```
+
+`client` — уже подключённый `TelegramClient`. `check_public` не возвращает `free`. Если сессия этого репозитория уже есть, пачку своих ников можно прогнать так:
+
+```python
+from probe import UsernameSession
+
+async with UsernameSession() as checker:
+    status = await checker.check("zov77")
+```
 
 Ключи и `.env` описаны в [гайде](docs/api-credentials.md). С российского адреса форма на [my.telegram.org](https://my.telegram.org) часто отвечает `Too many attempts`, и VPN эту строку не снимает. Код входа в прогоне этого репозитория до конца не дошёл: Telegram отдавал его только в приложение, без SMS и без почты.
 
